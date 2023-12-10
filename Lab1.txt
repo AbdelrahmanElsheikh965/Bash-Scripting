@@ -1,0 +1,74 @@
+Using sed utility
+1- Display the lines that contain the word “lp” in /etc/passwd file.
+2- Display /etc/passwd file except the third line.
+3- Display /etc/passwd file except the last line.
+4- Display /etc/passwd file except the lines that contain the word “lp”.
+5- Substitute all the words that contain “lp” with “mylp” in /etc/passwd file.
+
+(1)
+	Using sed utility:
+
+		1.	sed -n '/lp/p' /etc/passwd	(p flag for printing the lines)
+
+		2.	sed '3d' passwd2
+
+		3.	sed '$d' passwd2
+
+		4.	sed '/lp/d' passwd2
+
+		5.	sed 's/ash/kmk/g' passwd2 	(replace [ash] with [kmk] in each line as 'g' means global)
+
+
+Using awk utility
+1- Print full name (comment) of all users in the system.
+2- Print login, full name (comment) and home directory of all users.( Print each line preceded by a line number)
+3- Print login, uid and full name (comment) of those uid is greater than 500
+4- Print login, uid and full name (comment) of those uid is exactly 500
+5- Print line from 5 to 15 from /etc/passwd
+6- Change lp to mylp
+7- Print all information about greatest uid.
+8- Get the sum of all accounts id’s.
+
+
+	Using awk utility:
+
+		1.	awk -F':' '{print $5}' passwd2		(as comment or fullname exists in field number 5)
+
+		2.	awk -F':' '{print NR ": Login: " $1 ", Full Name: " $5 ", Home Directory: " $6}' passwd2
+
+		3.	awk -F':' '$3 > 500 {print $1, $3, $5}' passwd2		
+		
+		4.	awk -F':' '$3 == 500 {print $1, $3, $5}' passwd2
+
+		5.	awk 'NR>=5 && NR<=10' passwd2	( Print lines from 5 to 15 from passwd2 )
+		
+		6.	without gsub:
+			awk 'BEGIN {FS=OFS=":"} {for (i=1; i<=NF; i++) {if ($i == "lp") $i = "mylp"}} 1' passwd2
+			
+			using gsub:
+				awk 'BEGIN {FS=OFS=":"} {for (i=1; i<=NF; i++) gsub("lp", "mylp", $i)} 1' passwd2
+		
+		7.	awk -F':' '$3 > max_uid { max_uid = $3; line = $0 } END { print line }' passwd2
+
+		
+		8.	awk -F':' '{sum += $3} END {print "Sum of all account IDs:", sum}' passwd2
+		
+		Bonus:	awk -F':' '{sum[$4] += $3} END {for (group in sum) print "Group ID:", group, "| Sum of Account IDs:", sum[group]}' passwd2
+
+
+2. Make the following report:
+User-Group Report
+--------------------------
+Group1 Name:
+User1
+User2
+Group2 Name:
+User3
+User4
+
+(2)
+	awk -F':' '{users[$4] = users[$4] $1 "\n"} END {print "User-Group Report"; print "--------------------------"; 
+	for (group in users) print "Group" group " Name:\n" users[group]}' passwd2
+
+	
+
